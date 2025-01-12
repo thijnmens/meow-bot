@@ -5,6 +5,7 @@ import LoginMfaResponse from '../types/loginResponse/loginMfaResponse';
 import LoginSuccessResponse from '../types/loginResponse/loginSuccessResponse';
 import RequestError from '../types/requestError';
 import User from '../types/user';
+import Result from '../types/result';
 
 export default class Api {
 	protected token: string | undefined = undefined;
@@ -23,13 +24,8 @@ export default class Api {
 		email: string,
 		password: string
 	): Promise<LoginSuccessResponse> {
-		const response: AxiosResponse<
-			| LoginSuccessResponse
-			| LoginMfaResponse
-			| LoginDisabledResponse
-			| RequestError
-		> = await axios.post(
-			`${Config.REVOLT_API}auth/session/login`,
+		const response: AxiosResponse<any> = await axios.post(
+			`${Config.REVOLT_API}/auth/session/login`,
 			{
 				email,
 				password
@@ -47,21 +43,21 @@ export default class Api {
 				`Request failed (status: ${response.status} url: ${response.config.url})`
 			);
 
-		if (LoginSuccessResponse.objectCanCast(response.data)) {
+		if (response.data?.result == Result.SUCCESS) {
 			const data = response.data as LoginSuccessResponse;
 			this.token = data.token;
 			return data;
-		} else if (LoginMfaResponse.objectCanCast(response.data)) {
+		} else if (response.data?.result == Result.MFA) {
 			const data = response.data as LoginMfaResponse;
 			throw new Error(
 				`Failed to login because MFA is enabled (allowed login for account: ${data.allowed_methods})`
 			);
-		} else if (LoginDisabledResponse.objectCanCast(response.data)) {
+		} else if (response.data?.result == Result.DISABLED) {
 			const data = response.data as LoginDisabledResponse;
 			throw new Error(
 				`Failed to login because the account is disabled (user_id: ${data.user_id})`
 			);
-		} else if (RequestError.objectCanCast(response.data)) {
+		} else if (response.data?.type) {
 			const data = response.data as RequestError;
 			throw new Error(
 				`Failed to login because an error occurred (type: ${data.type}, location: ${data.location})`
@@ -74,11 +70,11 @@ export default class Api {
 	/**
 	 * Get currently logged-in user info
 	 */
-	async getSelf() {
+	async getSelf(): Promise<User> {
 		this.isLoggedIn();
 
-		const response: AxiosResponse<User | RequestError> = await axios.get(
-			`${Config.REVOLT_API}users/@me`,
+		const response: AxiosResponse<any> = await axios.get(
+			`${Config.REVOLT_API}/users/@me`,
 			{
 				headers: {
 					'Content-Type': 'application/json',
@@ -91,9 +87,9 @@ export default class Api {
 		if (response.status !== 200)
 			throw new Error(`Login failed (status: ${response.status})`);
 
-		if (User.objectCanCast(response.data)) {
+		if (response.data?.username) {
 			return response.data as User;
-		} else if (RequestError.objectCanCast(response.data)) {
+		} else if (response.data?.type) {
 			const data = response.data as RequestError;
 			throw new Error(
 				`Failed to login because an error occurred (type: ${data.type}, location: ${data.location})`

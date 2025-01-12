@@ -15,8 +15,3 @@ class Main {
 }
 
 const bot = new Main();
-bot.init().then(user => {
-	console.log(
-		`Bot logged in successfully as ${user.username}#${user.discriminator}`
-	);
-});
