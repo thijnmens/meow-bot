@@ -11,6 +11,10 @@ class Main {
 		this.rs = new RevoltSocket();
 		this.rs.onReady(event => {
 			console.log(`Bot logged in as ${event.users[0].username}`);
+
+			this.rs.onMessage(message => {
+				console.log(message.content);
+			});
 		});
 	}
 
@@ -20,4 +24,4 @@ class Main {
 	}
 }
 
-const bot = new Main();
+new Main();
