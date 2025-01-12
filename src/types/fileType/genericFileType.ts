@@ -1,6 +1,6 @@
-import FileType from './fileType';
+import FileType from '../fileType';
 
-export default class TextFileType {
+export default class GenericFileType {
 	type: FileType;
 
 	constructor(type: FileType) {
@@ -18,6 +18,6 @@ export default class TextFileType {
 			})
 		)
 			return false;
-		return (data as TextFileType).type === FileType.TEXT;
+		return (data as GenericFileType).type === FileType.FILE;
 	}
 }

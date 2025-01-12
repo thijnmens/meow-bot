@@ -1,6 +1,6 @@
-import FileType from './fileType';
+import FileType from '../fileType';
 
-export default class VideoFileType {
+export default class ImageFileType {
 	type: FileType;
 	height: number;
 	width: number;
@@ -22,6 +22,6 @@ export default class VideoFileType {
 			})
 		)
 			return false;
-		return (data as VideoFileType).type === FileType.VIDEO;
+		return (data as ImageFileType).type === FileType.IMAGE;
 	}
 }

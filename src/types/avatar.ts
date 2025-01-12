@@ -1,8 +1,8 @@
-import AudioFileType from './audioFileType';
-import GenericFileType from './genericFileType';
-import ImageFileType from './imageFileType';
-import TextFileType from './textFileType';
-import VideoFileType from './videoFileType';
+import AudioFileType from './fileType/audioFileType';
+import GenericFileType from './fileType/genericFileType';
+import ImageFileType from './fileType/imageFileType';
+import TextFileType from './fileType/textFileType';
+import VideoFileType from './fileType/videoFileType';
 
 export default class Avatar {
 	_id: string;

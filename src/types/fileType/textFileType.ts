@@ -1,6 +1,6 @@
-import FileType from './fileType';
+import FileType from '../fileType';
 
-export default class AudioFileType {
+export default class TextFileType {
 	type: FileType;
 
 	constructor(type: FileType) {
@@ -18,6 +18,6 @@ export default class AudioFileType {
 			})
 		)
 			return false;
-		return (data as AudioFileType).type === FileType.AUDIO;
+		return (data as TextFileType).type === FileType.TEXT;
 	}
 }

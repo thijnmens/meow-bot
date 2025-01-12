@@ -1,5 +1,5 @@
-import LoginMethods from './loginMethods';
-import Result from './result';
+import LoginMethods from '../loginMethods';
+import Result from '../result';
 
 export default class LoginMfaResponse {
 	allowed_methods: LoginMethods[];

@@ -1,8 +1,8 @@
 import axios, { AxiosResponse } from 'axios';
 import Config from '../config';
-import LoginDisabledResponse from '../types/loginDisabledResponse';
-import LoginMfaResponse from '../types/loginMfaResponse';
-import LoginSuccessResponse from '../types/loginSuccessResponse';
+import LoginDisabledResponse from '../types/loginResponse/loginDisabledResponse';
+import LoginMfaResponse from '../types/loginResponse/loginMfaResponse';
+import LoginSuccessResponse from '../types/loginResponse/loginSuccessResponse';
 import RequestError from '../types/requestError';
 import User from '../types/user';
 
