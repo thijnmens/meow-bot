@@ -132,6 +132,35 @@ export default class Api {
 		throw new Error(`Unknown response: ${JSON.stringify(response.data)}`);
 	}
 
+	async getUser(id: string): Promise<User> {
+		this.isLoggedIn();
+
+		const response: AxiosResponse<any> = await axios.get(
+			`${Config.REVOLT_API}/users/${id}`,
+			{
+				headers: {
+					'Content-Type': 'application/json',
+					'Accept': 'application/json',
+					'X-Bot-Token': Config.REVOLT_TOKEN
+				}
+			}
+		);
+
+		if (response.status !== 200)
+			throw new Error(`Login failed (status: ${response.status})`);
+
+		if (response.data?.username) {
+			return response.data as User;
+		} else if (response.data?.type) {
+			const data = response.data as RequestError;
+			throw new Error(
+				`Failed to fetch server member because an error occurred (type: ${data.type}, location: ${data.location})`
+			);
+		}
+
+		throw new Error(`Unknown response: ${JSON.stringify(response.data)}`);
+	}
+
 	/**
 	 * Check if api is able to make authenticated requests
 	 *

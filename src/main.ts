@@ -56,10 +56,9 @@ export default class Main {
 
 			case CommandType.LEADERBOARD:
 			case CommandType.LB:
-				this.api.sendMessage(
-					message.channel,
-					Commands.leaderboard(this)
-				);
+				Commands.leaderboard(this).then(response => {
+					this.api.sendMessage(message.channel, response);
+				});
 				break;
 
 			default:
