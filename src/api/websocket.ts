@@ -13,7 +13,7 @@ export default class RevoltSocket {
 		[key: string]: ((...args: any) => void)[];
 	};
 
-	constructor() {
+	constructor(token: string) {
 		this.ws = new WebSocket(
 			`${Config.REVOLT_WEBSOCKET}?version=1&format=json`
 		);
@@ -27,7 +27,7 @@ export default class RevoltSocket {
 		};
 
 		this.ws.onopen = () => {
-			this.sendEvent(new AuthenticateEvent(Config.REVOLT_TOKEN));
+			this.sendEvent(new AuthenticateEvent(token));
 
 			setInterval(() => {
 				this.sendEvent(new PingEvent());

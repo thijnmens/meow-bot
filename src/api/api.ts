@@ -6,6 +6,7 @@ import LoginSuccessResponse from '../types/loginResponse/loginSuccessResponse';
 import RequestError from '../types/requestError';
 import User from '../types/user';
 import Result from '../types/result';
+import Message from '../types/message';
 
 export default class Api {
 	protected token: string | undefined = undefined;
@@ -93,6 +94,38 @@ export default class Api {
 			const data = response.data as RequestError;
 			throw new Error(
 				`Failed to login because an error occurred (type: ${data.type}, location: ${data.location})`
+			);
+		}
+
+		throw new Error(`Unknown response: ${JSON.stringify(response.data)}`);
+	}
+
+	async sendMessage(channel: string, message?: string): Promise<Message> {
+		this.isLoggedIn();
+
+		const response: AxiosResponse<any> = await axios.post(
+			`${Config.REVOLT_API}/channels/${channel}/messages`,
+			{
+				content: message
+			},
+			{
+				headers: {
+					'Content-Type': 'application/json',
+					'Accept': 'application/json',
+					'X-Bot-Token': Config.REVOLT_TOKEN
+				}
+			}
+		);
+
+		if (response.status !== 200)
+			throw new Error(`Login failed (status: ${response.status})`);
+
+		if (response.data?.channel) {
+			return response.data as Message;
+		} else if (response.data?.type) {
+			const data = response.data as RequestError;
+			throw new Error(
+				`Failed to send message because an error occurred (type: ${data.type}, location: ${data.location})`
 			);
 		}
 
