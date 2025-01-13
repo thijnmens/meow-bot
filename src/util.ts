@@ -16,4 +16,8 @@ export default class Util {
 			args: data?.slice(1)
 		};
 	}
+
+	static getLevelFromXp(x: number): number {
+		return Math.ceil((x / 400) * Math.log(0.1 * x) + 1);
+	}
 }
