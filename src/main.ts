@@ -6,8 +6,9 @@ import Util from './util';
 import CommandType from './types/commandType';
 import ReadyEvent from './types/event/readyEvent';
 import Database from './database/database';
+import Commands from './commands/commands';
 
-class Main {
+export default class Main {
 	api: Api;
 	rs: RevoltSocket;
 	db: Database;
@@ -36,9 +37,29 @@ class Main {
 		if (!message.content?.startsWith(Config.PREFIX)) return;
 
 		const command = Util.messageToCommand(message);
-		switch (command.type.toLowerCase()) {
+		switch (command.type.toLowerCase() as CommandType) {
 			case CommandType.PING:
-				this.api.sendMessage(message.channel, 'Pong!');
+				this.api.sendMessage(message.channel, Commands.ping());
+				break;
+
+			case CommandType.HELP:
+				this.api.sendMessage(message.channel, Commands.help());
+				break;
+
+			case CommandType.LEVEL:
+			case CommandType.L:
+				this.api.sendMessage(
+					message.channel,
+					Commands.level(this, message)
+				);
+				break;
+
+			case CommandType.LEADERBOARD:
+			case CommandType.LB:
+				this.api.sendMessage(
+					message.channel,
+					Commands.leaderboard(this)
+				);
 				break;
 
 			default:

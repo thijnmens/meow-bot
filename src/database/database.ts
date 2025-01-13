@@ -26,6 +26,19 @@ export default class Database {
 		this.save();
 	}
 
+	getTopUsers(amount: number = 10): Map<string, number> {
+		const ranked = Object.keys(this.data.users).sort((a, b) =>
+			this.data.users[a] > this.data.users[b] ? -1 : 1
+		);
+		const topUsers = new Map<string, number>();
+
+		ranked.slice(0, amount).forEach(id => {
+			topUsers.set(id, this.data.users[id]);
+		});
+
+		return topUsers;
+	}
+
 	private save() {
 		fs.writeFileSync(`./database.json`, JSON.stringify(this.data));
 	}
