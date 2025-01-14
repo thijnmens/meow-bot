@@ -61,6 +61,13 @@ export default class Main {
 				});
 				break;
 
+			case CommandType.LIMIT:
+				this.api.sendMessage(
+					message.channel,
+					Commands.limit(this, message)
+				);
+				break;
+
 			default:
 				this.api.sendMessage(
 					message.channel,

@@ -5,6 +5,7 @@ class Config {
 	REVOLT_API: string = '';
 	REVOLT_WEBSOCKET: string = '';
 	PREFIX: string = '';
+	ADMIN_ROLE: string = '';
 
 	/**
 	 * Loads the .env
@@ -35,13 +36,17 @@ class Config {
 					this.PREFIX = assignment[1].trim();
 					break;
 
+				case 'ADMIN_ROLE':
+					this.ADMIN_ROLE = assignment[1].trim();
+					break;
+
 				default:
 					console.error('Unknown env assignment: ' + assignment[0]);
 					break;
 			}
 		});
 
-		if (Object.values(this).length !== 4) {
+		if (Object.values(this).length !== 5) {
 			throw new Error(
 				`Missing configuration (found: ${Object.values(this)} expected: ${Object.keys(Config.prototype)})`
 			);

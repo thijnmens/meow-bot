@@ -8,7 +8,9 @@ enum CommandType {
 
 	// Leaderboard
 	LEADERBOARD = 'leaderboard',
-	LB = 'lb'
+	LB = 'lb',
+
+	LIMIT = 'limit'
 }
 
 export default CommandType;

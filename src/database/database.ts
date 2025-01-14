@@ -5,10 +5,14 @@ export default class Database {
 		users: {
 			[key: string]: number;
 		};
+		messageLimit: number;
 	};
 	constructor() {
 		if (!fs.existsSync(`./database.json`)) {
-			fs.writeFileSync(`./database.json`, JSON.stringify({ users: {} }));
+			fs.writeFileSync(
+				`./database.json`,
+				JSON.stringify({ users: {}, messageLimit: 7 })
+			);
 		} else {
 			fs.copyFileSync(`./database.json`, `./database-${Date.now()}.json`);
 		}
@@ -37,6 +41,15 @@ export default class Database {
 		});
 
 		return topUsers;
+	}
+
+	getMessageLimit() {
+		return this.data.messageLimit;
+	}
+
+	setMessageLimit(limit: number) {
+		this.data.messageLimit = limit;
+		this.save();
 	}
 
 	private save() {
