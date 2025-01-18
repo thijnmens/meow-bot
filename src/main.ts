@@ -35,6 +35,7 @@ export default class Main {
 		this.rs.onMessage(_ => this.handleCommand(_));
 		this.rs.onMessage(_ => this.handleXp(_));
 		this.rs.onMessage(_ => this.handleLimiter(_));
+		this.rs.onMessage(_ => this.handleBannedTerms(_));
 	}
 
 	handleCommand(message: MessageEvent) {
@@ -73,6 +74,18 @@ export default class Main {
 				);
 				break;
 
+			case CommandType.ADD_TERM:
+				Commands.addTerm(this, message).then(response => {
+					this.api.sendMessage(message.channel, response);
+				});
+				break;
+
+			case CommandType.REMOVE_TERM:
+				Commands.removeTerm(this, message).then(response => {
+					this.api.sendMessage(message.channel, response);
+				});
+				break;
+
 			default:
 				this.api.sendMessage(
 					message.channel,
@@ -94,6 +107,7 @@ export default class Main {
 
 	handleLimiter(message: MessageEvent) {
 		if (message.author === this.bot_id) return;
+		if (message.member?.roles?.includes(Config.ADMIN_ROLE)) return;
 		if (this.db.getUserXp(message.author) >= 360) return; // Ignores users lvl 6 and up
 
 		this.limiter.addMessage(message.author);
@@ -117,6 +131,27 @@ export default class Main {
 					)
 				);
 		}
+	}
+
+	handleBannedTerms(message: MessageEvent) {
+		if (message.author === this.bot_id) return;
+		if (message.member?.roles?.includes(Config.ADMIN_ROLE)) return;
+		if (!message.content) return;
+		if (this.db.getUserXp(message.author) >= 360) return; // Ignores users lvl 6 and up
+
+		if (this.db.containsBannedTerm(message.content.trim().toLowerCase()))
+			this.api
+				.banUser(
+					message.member!._id.server,
+					message.author,
+					'Banned by meow banned term checker'
+				)
+				.then(() =>
+					this.api.sendMessage(
+						Config.ADMIN_CHANNEL,
+						`Banned user ${message.user!.username} for banned term in message "${message.content}"`
+					)
+				);
 	}
 }
 

@@ -6,12 +6,13 @@ export default class Database {
 			[key: string]: number;
 		};
 		messageLimit: number;
+		bannedTerms: string[];
 	};
 	constructor() {
 		if (!fs.existsSync(`./database.json`)) {
 			fs.writeFileSync(
 				`./database.json`,
-				JSON.stringify({ users: {}, messageLimit: 7 })
+				JSON.stringify({ users: {}, messageLimit: 7, bannedTerms: [] })
 			);
 		} else {
 			fs.copyFileSync(`./database.json`, `./database-${Date.now()}.json`);
@@ -50,6 +51,22 @@ export default class Database {
 	setMessageLimit(limit: number) {
 		this.data.messageLimit = limit;
 		this.save();
+	}
+
+	addBannedTerm(term: string) {
+		if (this.data.bannedTerms.includes(term)) return;
+
+		this.data.bannedTerms.push(term);
+		this.save();
+	}
+
+	removeBannedTerm(term: string) {
+		this.data.bannedTerms.splice(this.data.bannedTerms.indexOf(term), 1);
+		this.save();
+	}
+
+	containsBannedTerm(message: string) {
+		return this.data.bannedTerms.some(term => message.includes(term));
 	}
 
 	private save() {

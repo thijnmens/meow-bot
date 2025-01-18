@@ -10,7 +10,10 @@ enum CommandType {
 	LEADERBOARD = 'leaderboard',
 	LB = 'lb',
 
-	LIMIT = 'limit'
+	LIMIT = 'limit',
+
+	ADD_TERM = 'addterm',
+	REMOVE_TERM = 'removeterm'
 }
 
 export default CommandType;

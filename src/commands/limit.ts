@@ -6,7 +6,11 @@ import Util from '../util';
 export default function limit(context: Main, message: Message): string {
 	if (!message.member?.roles?.includes(Config.ADMIN_ROLE))
 		return 'You do not have permission to use this command';
+
 	const command = Util.messageToCommand(message);
+
+	if (command.args.length < 1) return "Missing arg 'Count'";
+
 	if (isNaN(Number(command.args[0])))
 		return `args[0] is not a valid number (args= ${command.args.join(',')})`;
 
