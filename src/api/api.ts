@@ -100,6 +100,49 @@ export default class Api {
 		throw new Error(`Unknown response: ${JSON.stringify(response.data)}`);
 	}
 
+	/**
+	 * Ban user from server
+	 *
+	 * @param serverId Id of the server
+	 * @param userId Id of the user
+	 * @param reason Reason for the ban
+	 */
+	async banUser(
+		serverId: string,
+		userId: string,
+		reason: string = 'Banned by meow'
+	) {
+		this.isLoggedIn();
+
+		const response: AxiosResponse<any> = await axios.put(
+			`${Config.REVOLT_API}/servers/${serverId}/bans/${userId}`,
+			{
+				reason
+			},
+			{
+				headers: {
+					'Content-Type': 'application/json',
+					'Accept': 'application/json',
+					'X-Bot-Token': Config.REVOLT_TOKEN
+				}
+			}
+		);
+
+		if (response.status !== 200)
+			throw new Error(`Failed to ban user (status: ${response.status})`);
+
+		if (response.data?._id?.server) {
+			return;
+		} else if (response.data?.type) {
+			const data = response.data as RequestError;
+			throw new Error(
+				`Failed to ban user because an error occurred (type: ${data.type}, location: ${data.location})`
+			);
+		}
+
+		throw new Error(`Unknown response: ${JSON.stringify(response.data)}`);
+	}
+
 	async sendMessage(channel: string, message?: string): Promise<Message> {
 		this.isLoggedIn();
 
