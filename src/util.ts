@@ -18,6 +18,6 @@ export default class Util {
 	}
 
 	static getLevelFromXp(x: number): number {
-		return Math.ceil((x / 400) * Math.log(0.1 * x) + 1);
+		return Math.ceil(10 * x ** 2);
 	}
 }
