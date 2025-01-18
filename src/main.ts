@@ -7,11 +7,13 @@ import CommandType from './types/commandType';
 import ReadyEvent from './types/event/readyEvent';
 import Database from './database/database';
 import Commands from './commands/commands';
+import MessageLimiter from './messageLimiter';
 
 export default class Main {
 	api: Api;
 	rs: RevoltSocket;
 	db: Database;
+	limiter: MessageLimiter;
 	bot_id: string | undefined;
 
 	constructor() {
@@ -21,6 +23,8 @@ export default class Main {
 		this.rs.onReady(_ => this.onStart(_));
 
 		this.db = new Database();
+
+		this.limiter = new MessageLimiter();
 	}
 
 	// Bind event callbacks
@@ -30,6 +34,7 @@ export default class Main {
 
 		this.rs.onMessage(_ => this.handleCommand(_));
 		this.rs.onMessage(_ => this.handleXp(_));
+		this.rs.onMessage(_ => this.handleLimiter(_));
 	}
 
 	handleCommand(message: MessageEvent) {
@@ -85,6 +90,33 @@ export default class Main {
 		points = points >= 10 ? 10 : points;
 
 		this.db.addUserXp(message.author, points);
+	}
+
+	handleLimiter(message: MessageEvent) {
+		if (message.author === this.bot_id) return;
+		if (this.db.getUserXp(message.author) >= 360) return; // Ignores users lvl 6 and up
+
+		this.limiter.addMessage(message.author);
+
+		if (
+			this.limiter.checkMessageCount(
+				message.author,
+				this.db.getMessageLimit()
+			)
+		) {
+			this.api
+				.banUser(
+					message.member!._id.server,
+					message.author,
+					'Banned by meow message limiter'
+				)
+				.then(() =>
+					this.api.sendMessage(
+						Config.ADMIN_CHANNEL,
+						`Banned user ${message.user!.username} for spamming`
+					)
+				);
+		}
 	}
 }
 
