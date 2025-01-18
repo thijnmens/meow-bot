@@ -1,4 +1,5 @@
 import * as fs from 'node:fs';
+import path from 'node:path';
 
 class Config {
 	REVOLT_TOKEN: string = '';
@@ -13,12 +14,14 @@ class Config {
 	 * Loads the .env
 	 */
 	constructor() {
-		if (!fs.existsSync('..\\.env'))
+		const filePath = path.join(__dirname, '..', '.env');
+		console.log(filePath);
+		if (!fs.existsSync(filePath))
 			throw new Error(
 				'.env does not exist! Please make sure to include an .env file in the root of the project'
 			);
 
-		const file: string = fs.readFileSync('..\\.env', 'utf8');
+		const file: string = fs.readFileSync(filePath, 'utf8');
 		file.split('\n').forEach(line => {
 			const assignment = line.split('=', 2);
 			switch (assignment[0]) {
