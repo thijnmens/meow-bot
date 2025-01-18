@@ -81,21 +81,10 @@ export default class Main {
 		if (message.author === this.bot_id) return;
 		if (!message.content) return;
 
-		const currentLevel = Util.getLevelFromXp(
-			this.db.getUserXp(message.author)
-		);
 		let points = message.content.split(' ').length;
 		points = points >= 10 ? 10 : points;
 
 		this.db.addUserXp(message.author, points);
-
-		const newLevel = Util.getLevelFromXp(this.db.getUserXp(message.author));
-		if (newLevel > currentLevel) {
-			this.api.sendMessage(
-				message.channel,
-				`Congratulations ${message.member?.nickname ?? message.user?.username} on reaching level ${newLevel}!`
-			);
-		}
 	}
 }
 
