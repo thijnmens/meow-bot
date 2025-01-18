@@ -2,7 +2,7 @@ import Config from '../config';
 
 export default function help(): string {
 	return (
-		`### Commands (prefix = \`${Config.PREFIX}\`)` +
+		`### Commands (prefix = \`${Config.PREFIX}\`)\n` +
 		'| Command | Description |\n' +
 		'|---|---|\n' +
 		'| Help | Displays this page | \n' +
