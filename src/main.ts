@@ -36,6 +36,7 @@ export default class Main {
 		this.rs.onMessage(_ => this.handleXp(_));
 		this.rs.onMessage(_ => this.handleLimiter(_));
 		this.rs.onMessage(_ => this.handleBannedTerms(_));
+		this.rs.onMessage(_ => this.handleLogger(_));
 	}
 
 	handleCommand(message: MessageEvent) {
@@ -103,6 +104,16 @@ export default class Main {
 		points = points >= 10 ? 10 : points;
 
 		this.db.addUserXp(message.author, points);
+	}
+
+	handleLogger(message: MessageEvent) {
+		if (message.author === this.bot_id) return;
+		if (!message.content) return;
+
+		this.api.sendMessage(
+			Config.LOG_CHANNEL,
+			`${message.user?.username} in ${message.channel}: "${message.content}"`
+		);
 	}
 
 	handleLimiter(message: MessageEvent) {

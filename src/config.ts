@@ -9,6 +9,7 @@ class Config {
 	ADMIN_ROLE: string = '';
 	MESSAGE_INTERVAL: number = 10_000;
 	ADMIN_CHANNEL: string = '';
+	LOG_CHANNEL: string = '';
 
 	/**
 	 * Loads the .env
@@ -53,13 +54,17 @@ class Config {
 					this.ADMIN_CHANNEL = assignment[1].trim();
 					break;
 
+				case 'LOG_CHANNEL':
+					this.LOG_CHANNEL = assignment[1].trim();
+					break;
+
 				default:
 					console.error('Unknown env assignment: ' + assignment[0]);
 					break;
 			}
 		});
 
-		if (Object.values(this).length !== 7) {
+		if (Object.values(this).length !== 8) {
 			throw new Error(
 				`Missing configuration (found: ${Object.values(this)} expected: ${Object.keys(Config.prototype)})`
 			);
