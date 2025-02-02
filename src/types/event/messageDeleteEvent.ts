@@ -3,12 +3,12 @@ import IEvent from '../IEvent';
 
 export default class MessageDeleteEvent implements IEvent {
 	type: EventType;
-	_id: string;
+	id: string;
 	channel: string;
 
 	constructor(id: string, channel: string) {
 		this.type = EventType.MESSAGE_DELETE;
-		this._id = id;
+		this.id = id;
 		this.channel = channel;
 	}
 

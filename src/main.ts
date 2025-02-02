@@ -10,11 +10,13 @@ import Commands from './commands/commands';
 import MessageLimiter from './messageLimiter';
 import MessageUpdateEvent from './types/event/messageUpdateEvent';
 import MessageDeleteEvent from './types/event/messageDeleteEvent';
+import MessageTracker from './database/messageTracker';
 
 export default class Main {
 	api: Api;
 	rs: RevoltSocket;
 	db: Database;
+	messageTracker: MessageTracker;
 	limiter: MessageLimiter;
 	bot_id: string | undefined;
 
@@ -25,6 +27,7 @@ export default class Main {
 		this.rs.onReady(_ => this.onStart(_));
 
 		this.db = new Database();
+		this.messageTracker = new MessageTracker();
 
 		this.limiter = new MessageLimiter();
 	}
@@ -114,10 +117,48 @@ export default class Main {
 		if (message.author === this.bot_id) return;
 		if (!message.content) return;
 
+		this.messageTracker.AddMessage(message);
 		this.api.sendMessage(
 			Config.LOG_CHANNEL,
 			`${message.user?.username} in ${message.channel}: "${message.content}"`
 		);
+	}
+
+	private handleLoggerUpdate(message: MessageUpdateEvent) {
+		if (!message.data.content) return;
+
+		const messageCopy = this.messageTracker.GetMessage(message.id);
+
+		if (messageCopy != null) {
+			messageCopy.content = message.data.content;
+			this.messageTracker.AddMessage(messageCopy);
+
+			this.api.sendMessage(
+				Config.LOG_CHANNEL,
+				`Updated message from ${messageCopy.user?.username} in ${messageCopy.channel}: "${messageCopy.content}"`
+			);
+		} else {
+			this.api.sendMessage(
+				Config.LOG_CHANNEL,
+				`Updated unknown message in ${message.channel}: "${message.data.content}"`
+			);
+		}
+	}
+
+	private handleLoggerDelete(message: MessageDeleteEvent) {
+		const messageCopy = this.messageTracker.GetMessage(message.id);
+
+		if (messageCopy != null) {
+			this.api.sendMessage(
+				Config.LOG_CHANNEL,
+				`Deleted message from ${messageCopy.user?.username} in ${messageCopy.channel}: "${messageCopy.content}"`
+			);
+		} else {
+			this.api.sendMessage(
+				Config.LOG_CHANNEL,
+				`Deleted unknown message in ${message.channel}"`
+			);
+		}
 	}
 
 	handleLimiter(message: MessageEvent) {
@@ -167,22 +208,6 @@ export default class Main {
 						`Banned user ${message.user!.username} for banned term in message "${message.content}"`
 					)
 				);
-	}
-
-	private handleLoggerUpdate(message: MessageUpdateEvent) {
-		if (!message.data.content) return;
-
-		this.api.sendMessage(
-			Config.LOG_CHANNEL,
-			`Updated message in ${message.channel}: "${message.data.content}"`
-		);
-	}
-
-	private handleLoggerDelete(message: MessageDeleteEvent) {
-		this.api.sendMessage(
-			Config.LOG_CHANNEL,
-			`Deleted message in ${message.channel}"`
-		);
 	}
 }
 
