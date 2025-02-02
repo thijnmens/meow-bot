@@ -13,7 +13,7 @@ enum EventType {
 	MESSAGE = 'Message',
 	MESSAGE_UPDATE = 'MessageUpdate',
 	MESSAGE_APPEND = 'MessageAppend',
-	MESSAGE_DELETED = 'MessageDeleted',
+	MESSAGE_DELETE = 'MessageDelete',
 	MESSAGE_REACT = 'MessageReact',
 	MESSAGE_UNREACT = 'MessageUnreact',
 	MESSAGE_REMOVE_REACTION = 'MessageRemoveReaction',

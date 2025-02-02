@@ -5,6 +5,8 @@ import PingEvent from '../types/event/pingEvent';
 import EventType from '../types/eventType';
 import ReadyEvent from '../types/event/readyEvent';
 import MessageEvent from '../types/event/messageEvent';
+import MessageUpdateEvent from '../types/event/messageUpdateEvent';
+import MessageDeleteEvent from '../types/event/messageDeleteEvent';
 
 export default class RevoltSocket {
 	private readonly ws: WebSocket;
@@ -49,6 +51,14 @@ export default class RevoltSocket {
 
 	onMessage(callback: (event: MessageEvent) => void) {
 		this.on<MessageEvent>(EventType.MESSAGE, callback);
+	}
+
+	onMessageUpdated(callback: (event: MessageUpdateEvent) => void) {
+		this.on<MessageUpdateEvent>(EventType.MESSAGE_UPDATE, callback);
+	}
+
+	onMessageDeleted(callback: (event: MessageDeleteEvent) => void) {
+		this.on<MessageDeleteEvent>(EventType.MESSAGE_DELETE, callback);
 	}
 
 	private sendEvent(event: IEvent) {

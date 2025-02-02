@@ -1,6 +1,6 @@
 import Api from './api/api';
 import Config from './config';
-import RevoltSocket from './api/websocket';
+import RevoltSocket from './api/revoltSocket';
 import MessageEvent from './types/event/messageEvent';
 import Util from './util';
 import CommandType from './types/commandType';
@@ -8,6 +8,8 @@ import ReadyEvent from './types/event/readyEvent';
 import Database from './database/database';
 import Commands from './commands/commands';
 import MessageLimiter from './messageLimiter';
+import MessageUpdateEvent from './types/event/messageUpdateEvent';
+import MessageDeleteEvent from './types/event/messageDeleteEvent';
 
 export default class Main {
 	api: Api;
@@ -37,6 +39,8 @@ export default class Main {
 		this.rs.onMessage(_ => this.handleLimiter(_));
 		this.rs.onMessage(_ => this.handleBannedTerms(_));
 		this.rs.onMessage(_ => this.handleLogger(_));
+		this.rs.onMessageUpdated(_ => this.handleLoggerUpdate(_));
+		this.rs.onMessageDeleted(_ => this.handleLoggerDelete(_));
 	}
 
 	handleCommand(message: MessageEvent) {
@@ -163,6 +167,22 @@ export default class Main {
 						`Banned user ${message.user!.username} for banned term in message "${message.content}"`
 					)
 				);
+	}
+
+	private handleLoggerUpdate(message: MessageUpdateEvent) {
+		if (!message.data.content) return;
+
+		this.api.sendMessage(
+			Config.LOG_CHANNEL,
+			`Updated message in ${message.channel}: "${message.data.content}"`
+		);
+	}
+
+	private handleLoggerDelete(message: MessageDeleteEvent) {
+		this.api.sendMessage(
+			Config.LOG_CHANNEL,
+			`Deleted message in ${message.channel}"`
+		);
 	}
 }
 
