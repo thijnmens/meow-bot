@@ -16,7 +16,7 @@ client.on('ready', async () => {
 	await onReady(client);
 });
 
-client.on('message', async message => {
+client.on('messageCreate', async message => {
 	await onMessage(client, message);
 });
 
@@ -27,4 +27,10 @@ if (!process.env.BOT_TOKEN) {
 	);
 }
 
-client.loginBot(process.env.BOT_TOKEN);
+client
+	.loginBot(process.env.BOT_TOKEN)
+	.then(() => console.log('Attempting login'))
+	.catch(error => {
+		console.error('Failed to login');
+		console.error(error);
+	});
