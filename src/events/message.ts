@@ -11,9 +11,6 @@ export default async function onMessage(client: Client, message: Message) {
 	let authorId = message.authorId;
 	if (!authorId) return;
 
-	// Check if user has an auto-ban poll
-	if (autobanPolls.includes(authorId)) return;
-
 	// Add user to messageTracker if they are not yet in there
 	if (!messageTracker.has(authorId)) {
 		messageTracker.set(authorId, 1);
@@ -21,6 +18,9 @@ export default async function onMessage(client: Client, message: Message) {
 
 	// Get message count of user for the last 10 seconds
 	let messageCount = messageTracker.get(authorId)!;
+
+	// Increase message count by 1
+	messageTracker.set(authorId, messageCount + 1);
 
 	// Check if messages exceed the auto-kick limit
 	if (messageCount >= Number(process.env.AUTO_KICK_LIMIT || 10)) {
@@ -31,6 +31,9 @@ export default async function onMessage(client: Client, message: Message) {
 		console.log(`Kicked ${authorId}`);
 	}
 
+	// Check if user has an auto-ban poll
+	if (autobanPolls.includes(authorId)) return;
+
 	// Check if messages exceed the ban-poll limit
 	if (messageCount >= Number(process.env.BAN_POLL_LIMIT || 5)) {
 		// Create autoban poll
@@ -39,9 +42,6 @@ export default async function onMessage(client: Client, message: Message) {
 		// If banned, stop function execution
 		if (banned) return;
 	}
-
-	// Increase message count by 1
-	messageTracker.set(authorId, messageCount + 1);
 
 	// Schedule removal of 1 message count after n seconds
 	setTimeout(
