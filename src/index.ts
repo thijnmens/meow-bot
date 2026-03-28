@@ -2,6 +2,7 @@ import { Client } from 'stoat.js';
 import onReady from './events/ready';
 import onMessage from './events/message';
 import { config as loadEnv } from 'dotenv';
+import onCommand from './events/command';
 
 // Load environment variables
 loadEnv();
@@ -18,6 +19,10 @@ client.on('ready', async () => {
 
 client.on('messageCreate', async message => {
 	await onMessage(client, message);
+});
+
+client.on('command', async message => {
+	await onCommand(client, message);
 });
 
 // Login to stoat with bot

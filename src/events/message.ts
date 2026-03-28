@@ -11,6 +11,9 @@ export default async function onMessage(client: Client, message: Message) {
 	let authorId = message.authorId;
 	if (!authorId) return;
 
+	// Ignore onMessage even if user is self
+	if (authorId == client.user?.id) return;
+
 	// Add user to messageTracker if they are not yet in there
 	if (!messageTracker.has(authorId)) {
 		messageTracker.set(authorId, 1);
@@ -39,6 +42,9 @@ export default async function onMessage(client: Client, message: Message) {
 		// Create autoban poll
 		let banned = await RunAutoBanPoll(client, message);
 
+		// 	Remove from autoban poll list
+		autobanPolls.splice(autobanPolls.indexOf(authorId), 1);
+
 		// If banned, stop function execution
 		if (banned) return;
 	}
@@ -48,15 +54,20 @@ export default async function onMessage(client: Client, message: Message) {
 		async () => {
 			messageTracker.set(authorId, messageTracker.get(authorId)! - 1);
 		},
-		Number(process.env.MESSAGE_REMOVAL_TIME) * 100
+		Number(process.env.MESSAGE_REMOVAL_TIME) * 1000
 	);
+
+	// Check if message is a command
+	if (message.content.startsWith('??')) {
+		client.emit('command', message);
+	}
 }
 
 async function RunAutoBanPoll(
 	client: Client,
 	message: Message
 ): Promise<boolean> {
-	// Add user to ongoing polls list so no new ones are triggered
+	// Add user to ongoing polls list so no new ones are triggeredW
 	autobanPolls.push(message.authorId!);
 
 	// Send poll message
