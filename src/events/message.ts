@@ -22,11 +22,11 @@ export default async function onMessage(client: Client, message: Message) {
 	// Increase message count by 1
 	messageTracker.set(authorId, messageCount + 1);
 
-	// Check if messages exceed the auto-kick limit
+	// Check if messages exceed the auto-ban limit
 	if (messageCount >= Number(process.env.AUTO_KICK_LIMIT || 10)) {
 		client.servers
 			.get(process.env.SERVER_ID || '01HF77VE0F5YSKFVD55QHZVAQD')
-			?.kickUser(authorId);
+			?.banUser(authorId);
 
 		console.log(`Kicked ${authorId}`);
 	}
