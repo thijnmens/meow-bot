@@ -46,7 +46,9 @@ export default async function onMessage(client: Client, message: Message) {
 		autobanPolls.splice(autobanPolls.indexOf(authorId), 1);
 
 		// If banned, stop function execution
-		if (banned) return;
+		if (banned) {
+			return;
+		}
 	}
 
 	// Schedule removal of 1 message count after n seconds
@@ -123,6 +125,10 @@ async function RunAutoBanPoll(
 					)
 		]
 	});
+
+	if (banned) {
+		client.emit('serverMemberBanned', message);
+	}
 
 	return false;
 }

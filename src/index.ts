@@ -3,6 +3,7 @@ import onReady from './events/ready';
 import onMessage from './events/message';
 import { config as loadEnv } from 'dotenv';
 import onCommand from './events/command';
+import onServerMemberBanned from './events/serverMemberBanned';
 
 // Load environment variables
 loadEnv();
@@ -14,15 +15,19 @@ let client = new Client({
 
 // Link events
 client.on('ready', async () => {
-	await onReady(client);
+	await onReady(client).catch(console.error);
 });
 
 client.on('messageCreate', async message => {
-	await onMessage(client, message);
+	await onMessage(client, message).catch(console.error);
 });
 
 client.on('command', async message => {
-	await onCommand(client, message);
+	await onCommand(client, message).catch(console.error);
+});
+
+client.on('serverMemberBanned', async message => {
+	await onServerMemberBanned(client, message).catch(console.error);
 });
 
 // Login to stoat with bot
