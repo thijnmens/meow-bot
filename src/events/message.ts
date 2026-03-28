@@ -28,9 +28,16 @@ export default async function onMessage(client: Client, message: Message) {
 
 	// Check if messages exceed the auto-ban limit
 	if (messageCount >= Number(process.env.AUTO_KICK_LIMIT || 10)) {
-		client.servers
-			.get(process.env.SERVER_ID || '01HF77VE0F5YSKFVD55QHZVAQD')
-			?.banUser(authorId);
+		try {
+			client.servers
+				.get(process.env.SERVER_ID || '01HF77VE0F5YSKFVD55QHZVAQD')
+				?.banUser(authorId);
+		} catch (error) {
+			console.error(
+				`Tried to ban ${authorId} but failed, they are probably already banned`
+			);
+			console.error(error);
+		}
 
 		console.log(`Kicked ${authorId}`);
 	}
@@ -156,10 +163,18 @@ async function checkReactions(
 	});
 
 	if (validVoteCount >= Number(process.env.REQUIRED_VOTES || 3)) {
-		message.server?.banUser(message.authorId!, {
-			reason: `Banned because of autoban poll ${pollId}`
-		});
-		console.log(`Banned ${message.authorId} from poll ${pollId}`);
+		try {
+			message.server?.banUser(message.authorId!, {
+				reason: `Banned because of autoban poll ${pollId}`
+			});
+			console.log(`Banned ${message.authorId} from poll ${pollId}`);
+		} catch (error) {
+			console.error(
+				`Tried to ban ${message.authorId} but failed, they are probably already banned`
+			);
+			console.error(error);
+		}
+
 		return true;
 	}
 
