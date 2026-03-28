@@ -2,6 +2,7 @@ import { Client, Message } from 'stoat.js';
 import autobanPollEmbed from '../embeds/autobanPollEmbed';
 import autobanPollSuccessEmbed from '../embeds/AutobanPollSuccessEmbed';
 import autobanPollFailedEmbed from '../embeds/AutobanPollFailedEmbed';
+import { decodeTime } from 'ulid';
 
 let messageTracker: Map<string, number> = new Map();
 let autobanPolls: string[] = [];
@@ -88,7 +89,6 @@ async function RunAutoBanPoll(
 
 	// Add reactions to poll
 	await poll.react('✅');
-	await poll.react('❌');
 
 	// Check reactions for n seconds
 	let banned = await checkReactions(client, message, poll.id);
@@ -143,7 +143,19 @@ async function checkReactions(
 	let reactions = client.messages.get(pollId)!.reactions!;
 
 	// If there are more than 2x more votes for banning than against, ban the user
-	if (reactions.get('✅')!.size / 2 > reactions.get('❌')!.size) {
+	let validVoteCount = 0;
+	let minimumAccountAge =
+		Number(process.env.ACCOUNT_AGE || 30) * 24 * 60 * 60 * 1000;
+
+	reactions.get('✅')?.forEach(userId => {
+		let accountCreationDate = decodeTime(userId);
+
+		if (new Date().getTime() - accountCreationDate > minimumAccountAge) {
+			validVoteCount++;
+		}
+	});
+
+	if (validVoteCount >= Number(process.env.REQUIRED_VOTES || 3)) {
 		message.server?.banUser(message.authorId!, {
 			reason: `Banned because of autoban poll ${pollId}`
 		});

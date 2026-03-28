@@ -23,6 +23,7 @@
 		"@types/node": "^25.5.0",
 		"stoat.js": "^7.3.6",
 		"ts-node": "^10.9.2",
-		"typescript": "^6.0.2"
+		"typescript": "^6.0.2",
+		"ulid": "^3.0.2"
 	}
 }
